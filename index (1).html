@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Computador Virtual | Testador de Script de Folhas de Ponto (Ollama qwen3-vl)</title>
+  <meta name="description"
+    content="Simulador de Sistema Operacional para testar o script Python de leitura e organização automática de folhas de ponto via IA Ollama qwen3-vl:4b.">
+
+  <!-- Google Fonts: Inter & Fira Code for Terminal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="desktop-body">
+
+  <!-- ==================== VIRTUAL DESKTOP SHELL ==================== -->
+  <div class="virtual-os" id="virtual-os">
+
+    <!-- Desktop Icons Grid -->
+    <div class="desktop-icons">
+      <div class="desktop-icon" id="icon-explorer" tabindex="0" title="Abrir pasta scaner diogo">
+        <div class="icon-badge-wrap">
+          <div class="icon-img folder-icon">📁</div>
+          <span class="file-count-badge" id="desktop-file-badge">0</span>
+        </div>
+        <span class="icon-label">scaner diogo</span>
+      </div>
+
+      <div class="desktop-icon" id="icon-terminal" tabindex="0" title="Executar script.py no terminal">
+        <div class="icon-img terminal-icon">🐍</div>
+        <span class="icon-label">script.py</span>
+      </div>
+
+      <div class="desktop-icon" id="icon-generator" tabindex="0" title="Criar folhas de ponto para teste">
+        <div class="icon-img generator-icon">📑</div>
+        <span class="icon-label">Gerar Folha</span>
+      </div>
+
+      <div class="desktop-icon" id="icon-code" tabindex="0" title="Ver código fonte do script">
+        <div class="icon-img code-icon">💻</div>
+        <span class="icon-label">Ver Código</span>
+      </div>
+
+      <div class="desktop-icon" id="icon-settings" tabindex="0" title="Status da IA Ollama">
+        <div class="icon-img settings-icon">🤖</div>
+        <span class="icon-label">Status Ollama</span>
+      </div>
+    </div>
+
+    <!-- Background Watermark / Guidance Overlay -->
+    <div class="desktop-watermark">
+      <div class="watermark-card">
+        <div class="watermark-header">
+          <span class="watermark-chip">COMPUTADOR VIRTUAL DE TESTES</span>
+          <h2>Organizador de Folhas de Ponto com IA</h2>
+        </div>
+        <p>Este ambiente simula sua Área de Trabalho com a pasta <code>scaner diogo</code> e o script Python <code>script.py</code>.</p>
+        <div class="watermark-steps">
+          <div class="step-item">
+            <span class="step-num">1</span>
+            <span>Abra a ferramenta <strong>"Gerar Folha"</strong> para criar documentos de teste (ex: Diogo Silva, Maria Oliveira).</span>
+          </div>
+          <div class="step-item">
+            <span class="step-num">2</span>
+            <span>Veja os arquivos criados na pasta <strong>"scaner diogo"</strong> ou solte suas próprias imagens nela.</span>
+          </div>
+          <div class="step-item">
+            <span class="step-num">3</span>
+            <span>Abra o <strong>"script.py"</strong> e clique em <strong>Executar</strong> para ver a IA ler os nomes e mover os arquivos para pastas em tempo real!</span>
+          </div>
+        </div>
+        <div class="watermark-actions">
+          <button class="btn-primary" id="quick-start-btn">⚡ Criar 3 Folhas de Exemplo e Testar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== WINDOW 1: FILE EXPLORER ==================== -->
+    <div class="window-card" id="win-explorer" style="width: 780px; height: 520px; top: 60px; left: 80px;">
+      <div class="window-header">
+        <div class="window-title">
+          <span class="win-icon">📁</span>
+          <span>Explorador de Arquivos &mdash; Desktop / scaner diogo</span>
+        </div>
+        <div class="window-controls">
+          <button class="win-btn win-min" title="Minimizar">&#8722;</button>
+          <button class="win-btn win-max" title="Maximizar">&#9633;</button>
+          <button class="win-btn win-close" title="Fechar">&times;</button>
+        </div>
+      </div>
+
+      <div class="window-toolbar">
+        <div class="toolbar-left">
+          <button class="btn-tool" id="btn-exp-new-sheet">📑 + Criar Folha de Teste</button>
+          <label class="btn-tool btn-upload-label">
+            📤 Upload de Imagem
+            <input type="file" id="file-upload-input" accept="image/*" multiple style="display: none;">
+          </label>
+          <button class="btn-tool" id="btn-exp-clear">🗑️ Limpar Pasta</button>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn-tool btn-run-accent" id="btn-exp-run-script">▶️ Rodar script.py</button>
+        </div>
+      </div>
+
+      <div class="window-body explorer-body">
+        <div class="explorer-sidebar">
+          <div class="sidebar-group">
+            <span class="sidebar-title">Acesso Rápido</span>
+            <div class="sidebar-item active">
+              <span>📁 scaner diogo</span>
+              <span class="badge" id="side-count">0</span>
+            </div>
+            <div class="sidebar-item" id="side-desktop-ref">
+              <span>🖥️ Área de Trabalho</span>
+            </div>
+          </div>
+          <div class="sidebar-group">
+            <span class="sidebar-title">Pastas Criadas pela IA</span>
+            <div class="subfolders-tree" id="subfolders-tree">
+              <span class="tree-empty">Nenhuma pasta criada ainda. Rode o script.py!</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="explorer-main">
+          <div class="path-bar">
+            <span class="path-segment">Área de Trabalho</span>
+            <span class="path-sep">&rsaquo;</span>
+            <span class="path-segment active">scaner diogo</span>
+            <span class="path-sep" id="subpath-sep" style="display: none;">&rsaquo;</span>
+            <span class="path-segment subpath" id="subpath-name" style="display: none;"></span>
+            <button class="btn-path-back" id="btn-path-back" style="display: none;">⬅ Voltar à raiz</button>
+          </div>
+
+          <!-- Dropzone area -->
+          <div class="file-dropzone" id="explorer-dropzone">
+            <div class="files-grid" id="explorer-files-grid">
+              <!-- Files rendered dynamically -->
+            </div>
+
+            <div class="empty-drop-hint" id="drop-hint">
+              <div class="hint-icon">🖼️</div>
+              <h4>A pasta "scaner diogo" está vazia</h4>
+              <p>Clique em <strong>"+ Criar Folha de Teste"</strong> ou arraste arquivos <code>.jpg, .png</code> para cá.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="window-statusbar">
+        <span id="exp-status-left">0 item(ns) na pasta</span>
+        <span id="exp-status-right">C:\Users\diogo\Desktop\scaner diogo</span>
+      </div>
+    </div>
+
+    <!-- ==================== WINDOW 2: TERMINAL SCRIPT RUNNER ==================== -->
+    <div class="window-card" id="win-terminal" style="width: 740px; height: 480px; top: 100px; left: 320px;">
+      <div class="window-header terminal-header">
+        <div class="window-title">
+          <span class="win-icon">🐍</span>
+          <span>Terminal Prompt &mdash; python script.py</span>
+        </div>
+        <div class="window-controls">
+          <button class="win-btn win-min" title="Minimizar">&#8722;</button>
+          <button class="win-btn win-max" title="Maximizar">&#9633;</button>
+          <button class="win-btn win-close" title="Fechar">&times;</button>
+        </div>
+      </div>
+
+      <div class="window-toolbar terminal-toolbar">
+        <button class="btn-term btn-start" id="btn-term-run">▶️ Executar script.py</button>
+        <button class="btn-term btn-stop" id="btn-term-stop" disabled>⏹️ Interromper</button>
+        <button class="btn-term" id="btn-term-clear">🧹 Limpar Console</button>
+        <div class="terminal-status-tag" id="term-status-tag">Status: Pronto</div>
+      </div>
+
+      <div class="window-body terminal-body" id="terminal-body">
+        <div class="terminal-welcome">
+          <pre class="ascii-art">
+  ___  _ __ __ _ _ __  _  ___ 
+ / _ \| '__/ _` | '_ \| |/ _ \
+| (_) | | | (_| | | | | |  __/
+ \___/|_|  \__,_|_| |_|_|\___|  qwen3-vl:4b
+          </pre>
+          <p class="term-dim">PowerShell 7.4.1 - Ambiente Virtual de Testes do Python</p>
+          <p class="term-dim">Digite ou clique em <strong>[▶️ Executar script.py]</strong> para iniciar a leitura por IA.</p>
+          <br>
+        </div>
+        <div class="terminal-logs" id="terminal-logs"></div>
+      </div>
+
+      <div class="window-statusbar terminal-statusbar">
+        <span>Modelo IA: qwen3-vl:4b (Ollama Simulado / Conectável)</span>
+        <span id="term-timer">00:00</span>
+      </div>
+    </div>
+
+    <!-- ==================== WINDOW 3: TIMESHEET GENERATOR ==================== -->
+    <div class="window-card" id="win-generator" style="width: 720px; height: 530px; top: 80px; left: 200px;">
+      <div class="window-header">
+        <div class="window-title">
+          <span class="win-icon">📑</span>
+          <span>Gerador de Folha de Ponto de Teste</span>
+        </div>
+        <div class="window-controls">
+          <button class="win-btn win-min" title="Minimizar">&#8722;</button>
+          <button class="win-btn win-max" title="Maximizar">&#9633;</button>
+          <button class="win-btn win-close" title="Fechar">&times;</button>
+        </div>
+      </div>
+
+      <div class="window-body generator-body">
+        <div class="gen-sidebar">
+          <h3>Dados do Documento</h3>
+          
+          <div class="form-field">
+            <label for="gen-employee-name">Nome do Funcionário na Folha:</label>
+            <input type="text" id="gen-employee-name" value="DIOGO SILVA DOS SANTOS" placeholder="Ex: CARLOS ALBERTO SILVA">
+            <small>Dica: Deixe em branco para testar o caso <code>NAO_IDENTIFICADO</code>.</small>
+          </div>
+
+          <div class="form-field">
+            <label for="gen-company-name">Nome da Empresa:</label>
+            <input type="text" id="gen-company-name" value="COMÉRCIO E SERVIÇOS RIO DAS OSTRAS LTDA">
+          </div>
+
+          <div class="form-field">
+            <label for="gen-month-year">Mês / Ano:</label>
+            <input type="text" id="gen-month-year" value="AGOSTO / 2026">
+          </div>
+
+          <div class="form-field">
+            <label for="gen-style">Estilo de Impressão / Qualidade:</label>
+            <select id="gen-style" class="gen-select">
+              <option value="clean">Nitido e Nítido (Ideal para OCR)</option>
+              <option value="handwritten">Com Assinatura Manuscrita</option>
+              <option value="scanned">Efeito Escaneado com Roupagem / Ângulo</option>
+              <option value="illegible">Sem Nome (Testar NAO_IDENTIFICADO)</option>
+            </select>
+          </div>
+
+          <div class="gen-actions">
+            <button class="btn-primary" id="btn-gen-create">✨ Gerar e Salvar em scaner diogo</button>
+            <button class="btn-secondary" id="btn-gen-preview-only">👁️ Atualizar Prévia</button>
+          </div>
+        </div>
+
+        <div class="gen-preview-area">
+          <span class="preview-title">Prévia da Imagem Gerada (Folha de Ponto)</span>
+          <div class="canvas-wrapper">
+            <canvas id="timesheet-canvas" width="600" height="750"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== WINDOW 4: CODE VIEWER ==================== -->
+    <div class="window-card" id="win-code" style="width: 760px; height: 520px; top: 120px; left: 160px;">
+      <div class="window-header">
+        <div class="window-title">
+          <span class="win-icon">💻</span>
+          <span>Código Fonte &mdash; script.py</span>
+        </div>
+        <div class="window-controls">
+          <button class="win-btn win-min" title="Minimizar">&#8722;</button>
+          <button class="win-btn win-max" title="Maximizar">&#9633;</button>
+          <button class="win-btn win-close" title="Fechar">&times;</button>
+        </div>
+      </div>
+
+      <div class="window-body code-body">
+        <div class="code-info-bar">
+          <span>📄 <code>c:\Users\diogo\Desktop\scaner diogo\script.py</code></span>
+          <span class="tag-py">Python 3 + Ollama qwen3-vl:4b</span>
+        </div>
+        <pre class="code-viewer-pre"><code id="code-viewer-content"></code></pre>
+      </div>
+    </div>
+
+    <!-- ==================== WINDOW 5: OLLAMA SETTINGS ==================== -->
+    <div class="window-card" id="win-settings" style="width: 580px; height: 420px; top: 140px; left: 240px;">
+      <div class="window-header">
+        <div class="window-title">
+          <span class="win-icon">🤖</span>
+          <span>Configurações & Status da IA Ollama</span>
+        </div>
+        <div class="window-controls">
+          <button class="win-btn win-min" title="Minimizar">&#8722;</button>
+          <button class="win-btn win-max" title="Maximizar">&#9633;</button>
+          <button class="win-btn win-close" title="Fechar">&times;</button>
+        </div>
+      </div>
+
+      <div class="window-body settings-body">
+        <div class="status-card-box">
+          <div class="status-indicator-dot online"></div>
+          <div>
+            <h4>Modelo Selecionado: <code>qwen3-vl:4b</code></h4>
+            <p>Visão computacional ativada para OCR de documentos e leitura de campos "Nome / Funcionário".</p>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Modo de Operação do Simulador</h3>
+
+          <label class="radio-label">
+            <input type="radio" name="ollama-mode" value="simulated" checked>
+            <div>
+              <strong>Modo 100% Simulação (Recomendado para Testes Rápido)</strong>
+              <p>Simula as respostas do Ollama diretamente no navegador instantaneamente.</p>
+            </div>
+          </label>
+
+          <label class="radio-label">
+            <input type="radio" name="ollama-mode" value="local">
+            <div>
+              <strong>Modo Servidor Local Ollama (http://localhost:11434)</strong>
+              <p>Conecta ao seu serviço Ollama nativo instalado no Windows para enviar imagens reais para o modelo `qwen3-vl:4b`.</p>
+            </div>
+          </label>
+        </div>
+
+        <div class="prompt-box-preview">
+          <h4>Prompt Enviado para a IA:</h4>
+          <pre>Procure cuidadosamente na imagem por campos como: Nome, Funcionário, Colaborador.
+Se conseguir identificar com segurança, responda: FUNCIONARIO: NOME COMPLETO.
+Se não conseguir: FUNCIONARIO: NAO_IDENTIFICADO.</pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== VIRTUAL TASKBAR / SYSTEM FOOTER ==================== -->
+  <footer class="virtual-taskbar">
+    <button class="start-btn" id="start-menu-btn">
+      <span class="start-icon">❖</span>
+      <span>Iniciar</span>
+    </button>
+
+    <!-- Open App Tabs -->
+    <div class="taskbar-tabs" id="taskbar-tabs">
+      <button class="taskbar-tab active" data-win="win-explorer">
+        <span>📁 scaner diogo</span>
+      </button>
+      <button class="taskbar-tab" data-win="win-terminal">
+        <span>🐍 script.py</span>
+      </button>
+      <button class="taskbar-tab" data-win="win-generator">
+        <span>📑 Gerar Folha</span>
+      </button>
+      <button class="taskbar-tab" data-win="win-code">
+        <span>💻 Código</span>
+      </button>
+    </div>
+
+    <!-- System Tray / Clock -->
+    <div class="system-tray">
+      <div class="tray-status" title="Conexão com Ollama Ativa">
+        <span class="status-dot"></span>
+        <span id="ollama-tray-label">Ollama Simulado</span>
+      </div>
+      <div class="tray-clock">
+        <span id="system-time">16:25</span>
+        <span id="system-date">01/09/2026</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Start Menu Popup -->
+  <div class="start-menu" id="start-menu" style="display: none;">
+    <div class="start-menu-header">
+      <div class="user-avatar">👤</div>
+      <div class="user-info">
+        <strong>Usuário Diogo</strong>
+        <small>Área de Trabalho: C:\Users\diogo\Desktop</small>
+      </div>
+    </div>
+    <div class="start-menu-grid">
+      <button class="start-item" id="start-open-explorer">
+        <span>📁 Pasta scaner diogo</span>
+      </button>
+      <button class="start-item" id="start-open-terminal">
+        <span>🐍 Terminal (script.py)</span>
+      </button>
+      <button class="start-item" id="start-open-generator">
+        <span>📑 Gerador de Folhas</span>
+      </button>
+      <button class="start-item" id="start-open-code">
+        <span>💻 Ver Código Python</span>
+      </button>
+      <button class="start-item" id="start-open-settings">
+        <span>🤖 Status do Ollama</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
